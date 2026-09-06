@@ -49,20 +49,20 @@ function inquiryQuestion(policy) {
 
 function comparisonInsights(policy) {
   if (!policy.previous) return {
-    continuing: `${policy.theme}の課題を、今回の重点テーマとして扱っている点`,
-    changed: `問題意識から「${policy.current}」という具体策へ展開`,
+    continuing: `${policy.theme}の課題を重点テーマに`,
+    changed: `問題意識から「${policy.current}」へ具体化`,
   };
   if (policy.status === '継続') return {
-    continuing: `前回から「${policy.theme}」の基本方針を継続`,
-    changed: `対象や実施方法を「${policy.current}」へ具体化`,
+    continuing: `${policy.theme}の課題対応を継続`,
+    changed: `「${policy.current}」へ具体化`,
   };
   if (policy.status === '優先順位変更') return {
-    continuing: `${policy.theme}を行政課題として扱う方針`,
-    changed: `一律の目標から、利用頻度を基準にした実施順序へ変更`,
+    continuing: `${policy.theme}を行政課題として継続`,
+    changed: '一律目標から、利用頻度順の実施へ',
   };
   return {
-    continuing: `${policy.theme}で解決しようとする課題認識`,
-    changed: `「${policy.previous}」から「${policy.current}」へ方針を${policy.status}`,
+    continuing: `${policy.theme}の課題認識を継続`,
+    changed: `「${policy.current}」へ${policy.status}`,
   };
 }
 
