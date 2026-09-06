@@ -123,7 +123,16 @@ function ArchivePanel({ policy, onSource }) {
 
 function MediaInquiry({ policy, onSource }) {
   const insight = comparisonInsights(policy); const firstSource = policy.sources[0];
-  return <div className="media-inquiry"><div className="change-to-question"><div><span>{policy.previous ? '変化した点' : '新たに具体化された点'}</span><strong>{insight.changed}</strong></div><i>→</i><div className="inquiry-question"><span>取材で確認する問い</span><strong>「{inquiryQuestion(policy)}」</strong></div></div><details className="inquiry-details"><summary>候補者説明・追加取材・出典を見る</summary><div className="inquiry-details-body"><section><span>候補者本人の説明</span><p>{policy.explanation}</p></section><section className="confirmed-detail"><span>資料で確認できた点</span><p>{firstSource ? `${firstSource.type}で、${policy.theme}に関する記載を確認しています。` : '今回公約の記載を確認しています。'}</p>{firstSource&&<button onClick={()=>onSource(firstSource)}>出典を見る →</button>}</section><section className="unknown-detail"><span>追加確認が必要な点</span><p>{policy.previous ? `${policy.status}に至った判断時期と、具体的な財源・実施体制。` : '具体的な財源・人員配置・開始時期。'}</p></section></div></details><p className="media-role-note">変化は評価ではなく、理由を確認する入口です。最終判断は有権者に委ねます。</p></div>;
+  const investigation = policy.previous
+    ? `${firstSource?.type || '公開資料'}で確認できる記載に加え、${policy.status}に至った判断時期、財源、実施体制を取材します。`
+    : `${firstSource?.type || '今回公約'}の記載に加え、具体的な財源、人員配置、開始時期を取材します。`;
+  const steps = [
+    [policy.previous ? '変化した点' : '新たに具体化された点', insight.changed, 'change'],
+    ['取材で確認する問い', `「${inquiryQuestion(policy)}」`, 'question'],
+    ['候補者説明', policy.explanation, 'explanation'],
+    ['追加取材', investigation, 'investigation'],
+  ];
+  return <div className="media-inquiry"><div className="media-inquiry-flow">{steps.map(([label,text,tone],index)=><div className="media-step-wrap" key={label}><section className={`media-step media-step-${tone}`}><span>{String(index+1).padStart(2,'0')}　{label}</span><p>{text}</p></section><i aria-hidden="true">↓</i></div>)}<section className="media-step media-step-sources"><span>05　出典</span><p>判断の前に、確認に使った資料の該当箇所まで遡れます。</p><div>{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source)}>出典を見る：{source.type} →</button>)}</div></section></div><p className="media-role-note">変化は評価ではなく、説明・取材・根拠確認へ進む入口です。最終判断は有権者に委ねます。</p></div>;
 }
 
 function PolicyFlow({ policy, onSource }) {
