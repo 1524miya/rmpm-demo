@@ -27,40 +27,39 @@ function verification(policy) {
   return `${policy.sources.map(s=>s.type).slice(0,2).join('・')}と過去発言を照合し、方針が変化した理由と実施条件を追加取材します。政策効果は判定しません。`;
 }
 
-function MapTooltip({ active, payload }) {
+function MapTooltip({ active, payload, mode }) {
   if (!active || !payload?.[0]) return null;
   const item = payload[0].payload;
-  const summary = counts(item.policy).map(x => `${x.kind} ${x.count}`).join(' / ');
-  return <div className="map-tooltip interactive-tooltip"><span className="tooltip-candidate">{item.candidate.name}</span><strong>{item.policy.theme}</strong><span>現在の状態：{item.policy.status || '初回立候補'}</span><span>前回公約：{item.policy.previous || '過去比較なし'}</span><span>関連活動：{summary}</span><b>点をクリックすると詳細を固定表示</b></div>;
+  const activeCounts = counts(item.policy).filter(x => x.count > 0);
+  const summary = activeCounts.length ? activeCounts.map(x => `${x.kind}${x.count}件`).join(' / ') : '公開資料上の記録なし';
+  return <div className="map-tooltip interactive-tooltip">{mode === 'promise' && <span className="tooltip-candidate">{item.candidate.name}</span>}<strong>{item.policy.theme}</strong><span>状態：{item.policy.status || '初回立候補'}</span><span>関連活動：{summary}</span><b>クリックで詳細を見る</b></div>;
 }
 
 function pointKey(item) {
   return item ? `${item.candidate.id}-${item.policy.theme}` : '';
 }
 
-function LabeledPoint({ cx, cy, payload, selectedKey, onSelect }) {
+function LabeledPoint({ cx, cy, payload, selectedKey, onSelect, mode }) {
   if (!payload) return null;
   const selected = pointKey(payload) === selectedKey;
-  const placeLeft = payload.x > 68;
-  const placeBelow = payload.y > 72;
-  const width = 108;
-  const height = 53;
-  const labelX = placeLeft ? cx - width - 14 : cx + 14;
-  const labelY = placeBelow ? cy + 10 : cy - height - 10;
-  const lineX = placeLeft ? labelX + width : labelX;
-  const lineY = placeBelow ? labelY + 7 : labelY + height - 7;
-  const name = payload.candidate.name.replace(' ', '');
+  const placeLeft = payload.x > 62 || payload.labelIndex % 4 === 2;
+  const placeBelow = payload.y > 68 || payload.labelIndex % 4 === 1;
+  const labelX = placeLeft ? cx - 14 : cx + 14;
+  const labelY = placeBelow ? cy + 17 : cy - 17;
+  const anchor = placeLeft ? 'end' : 'start';
+  const lineX = placeLeft ? labelX + 4 : labelX - 4;
+  const mainLabel = mode === 'candidate' ? payload.policy.theme : payload.candidate.name.replace(' ', '');
   const state = payload.policy.status || '初回立候補';
   const select = event => { event.stopPropagation(); onSelect(payload); };
-  return <g className={`rmpm-point${selected?' selected':''}`} role="button" tabIndex="0" aria-label={`${name}、${payload.policy.theme}、${state}。クリックで詳細を固定表示`} onClick={select} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();select(event)}}}>
-    <line x1={cx} y1={cy} x2={lineX} y2={lineY} stroke={selected?'#8f4b13':'#b9aaa0'} strokeWidth="1"/>
+  const labelWidth = Math.max(58, Math.min(96, Math.max(mainLabel.length * 10, state.length * 8) + 12));
+  const bgX = placeLeft ? labelX - labelWidth - 4 : labelX - 4;
+  return <g className={`rmpm-point${selected?' selected':''}`} role="button" tabIndex="0" aria-label={`${payload.candidate.name}、${payload.policy.theme}、${state}。クリックで詳細を固定表示`} onClick={select} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();select(event)}}}>
+    <line x1={cx} y1={cy} x2={lineX} y2={labelY-2} stroke={selected?'#8f4b13':'#c8bcb3'} strokeWidth="1"/>
     {selected && <circle cx={cx} cy={cy} r="12" fill="none" stroke="#8f4b13" strokeWidth="2"/>}
     <circle cx={cx} cy={cy} r={selected?7:6} fill={payload.color} stroke="#fff" strokeWidth="2"/>
-    <rect x={labelX} y={labelY} width={width} height={height} rx="3" fill={selected?'#fff3e6':'#ffffff'} stroke={selected?'#d69a67':'#ddd5ce'} strokeWidth="1"/>
-    <text x={labelX+8} y={labelY+14} fill="#403832" fontSize="9" fontWeight="700">{name}</text>
-    <text x={labelX+8} y={labelY+28} fill="#665f59" fontSize="8">{payload.policy.theme}</text>
-    <rect x={labelX+7} y={labelY+34} width={Math.min(91,Math.max(38,state.length*9+10))} height="13" rx="6" fill={selected?'#f2d7bd':'#f3f1ef'}/>
-    <text x={labelX+12} y={labelY+43.5} fill="#6f5541" fontSize="7">{state}</text>
+    {selected && <rect className="point-label-bg" x={bgX} y={labelY-12} width={labelWidth} height="29" rx="4" fill="#fff3e6"/>}
+    <text x={labelX} y={labelY-1} textAnchor={anchor} fill="#403832" fontSize="9" fontWeight="700">{mainLabel}</text>
+    <text x={labelX} y={labelY+11} textAnchor={anchor} fill={selected?'#8f4b13':'#716961'} fontSize="7.5">{state}</text>
   </g>;
 }
 
@@ -91,15 +90,15 @@ export default function RmpmMap({ candidate, candidates, initialTheme, onSource 
   useEffect(()=>setTheme(initialTheme || '子育て'),[initialTheme]);
   useEffect(()=>setSelected(null),[mode,theme,candidate.id]);
   const data = useMemo(() => mode === 'candidate'
-    ? candidate.policies.filter(p=>p.activityLevel !== null).map((policy,i)=>({x:policy.activityLevel,y:policy.centrality,policy,candidate,color:policyColors[i]}))
-    : candidates.map((person,i)=>({person,policy:person.policies.find(p=>p.theme===theme),color:candidateColors[i]})).filter(x=>x.policy.activityLevel !== null).map(x=>({x:x.policy.activityLevel,y:x.policy.centrality,policy:x.policy,candidate:x.person,color:x.color})),[mode,theme,candidate,candidates]);
+    ? candidate.policies.filter(p=>p.activityLevel !== null).map((policy,i)=>({x:policy.activityLevel,y:policy.centrality,policy,candidate,color:policyColors[i],labelIndex:i}))
+    : candidates.map((person,i)=>({person,policy:person.policies.find(p=>p.theme===theme),color:candidateColors[i]})).filter(x=>x.policy.activityLevel !== null).map((x,i)=>({x:x.policy.activityLevel,y:x.policy.centrality,policy:x.policy,candidate:x.person,color:x.color,labelIndex:i})),[mode,theme,candidate,candidates]);
   const noComparison = mode === 'promise' ? candidates.filter(person=>person.policies.find(p=>p.theme===theme)?.activityLevel === null) : [];
   return <div className="rmpm-explorer">
     <div className="map-controls"><div className="mode-switch" aria-label="RMPM表示モード"><button className={mode==='candidate'?'active':''} onClick={()=>setMode('candidate')}>候補者別</button><button className={mode==='promise'?'active':''} onClick={()=>setMode('promise')}>公約別</button></div>{mode==='promise'&&<div className="map-theme-switch" aria-label="政策テーマ">{themes.map(t=><button className={theme===t?'active':''} onClick={()=>setTheme(t)} key={t}>{t}</button>)}</div>}</div>
     {mode==='promise'&&<div className="promise-mode-intro"><strong>同じ政策を掲げていても、その経過や確認可能な活動は異なります。</strong><span>候補者間の違いを発見し、その理由を確認するための入口です。</span></div>}
     <div className="map-alert compact-alert"><strong>この位置は候補者の優劣・誠実さ・政策の正しさを示すものではありません。</strong><span>右上ほど優秀という意味はなく、総合得点・達成率・順位を表しません。</span></div>
     <div className="chart-wrap interactive-chart" aria-label={mode==='candidate'?`${candidate.name}の候補者別RMPM`:`${theme}の公約別RMPM`} onClick={event=>{if(!event.target.closest('.rmpm-point,.map-labels button'))setSelected(null)}}>
-      <ResponsiveContainer width="100%" height={460}><ScatterChart margin={{top:72,right:130,bottom:70,left:72}}><CartesianGrid stroke="#e6e0da" strokeDasharray="3 5"/><XAxis type="number" dataKey="x" domain={[0,100]} ticks={[10,50,90]} tickFormatter={v=>v<34?'限定的':v<67?'複数':'継続的'} label={{value:'公開資料から確認可能な関連活動 →',position:'bottom',offset:14,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}}/><YAxis type="number" dataKey="y" domain={[0,100]} ticks={[10,50,90]} tickFormatter={v=>v<34?'関連':v<67?'重点':'中心'} label={{value:'公約全体における政策の中心性 →',angle:-90,position:'insideLeft',offset:9,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}}/><Tooltip content={<MapTooltip/>} cursor={{stroke:'#c8b6a7',strokeDasharray:'3 4'}}/><Scatter data={data} shape={props=><LabeledPoint {...props} selectedKey={pointKey(selected)} onSelect={setSelected}/>} isAnimationActive={false}/></ScatterChart></ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={420}><ScatterChart margin={{top:48,right:92,bottom:64,left:68}}><CartesianGrid stroke="#e6e0da" strokeDasharray="3 5"/><XAxis type="number" dataKey="x" domain={[0,100]} ticks={[10,50,90]} tickFormatter={v=>v<34?'限定的':v<67?'複数':'継続的'} label={{value:'公開資料から確認可能な関連活動 →',position:'bottom',offset:14,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}}/><YAxis type="number" dataKey="y" domain={[0,100]} ticks={[10,50,90]} tickFormatter={v=>v<34?'関連':v<67?'重点':'中心'} label={{value:'公約全体における政策の中心性 →',angle:-90,position:'insideLeft',offset:9,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}}/><Tooltip content={<MapTooltip mode={mode}/>} cursor={{stroke:'#c8b6a7',strokeDasharray:'3 4'}}/><Scatter data={data} shape={props=><LabeledPoint {...props} mode={mode} selectedKey={pointKey(selected)} onSelect={setSelected}/>} isAnimationActive={false}/></ScatterChart></ResponsiveContainer>
       <div className="map-labels">{data.map(item=><button className={selected?.candidate.id===item.candidate.id&&selected?.policy.theme===item.policy.theme?'active':''} onClick={()=>setSelected(item)} key={`${item.candidate.id}-${item.policy.theme}`}><i style={{background:item.color}}/>{mode==='candidate'?item.policy.theme:item.candidate.name}</button>)}</div>
     </div>
     {noComparison.map(person=><button className="newcomer-map-item" key={person.id} onClick={()=>setSelected({candidate:person,policy:person.policies.find(p=>p.theme===theme),color:'#9a826d'})}><strong>{person.name}・初回立候補</strong><span>今回が初回立候補のため、過去公約との比較対象はありません。位置を低く見せないため散布図外に表示しています。詳細を見る →</span></button>)}
