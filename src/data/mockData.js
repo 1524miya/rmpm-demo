@@ -5,7 +5,7 @@ const source = (type, title, date, excerpt) => ({ type, title, date, excerpt });
 export const candidates = [
   {
     id: 'tanaka', name: '田中 未来', kana: 'たなか みらい', role: '現職・2期', age: 48,
-    tagline: '暮らしの選択肢を、次の世代へ。', color: '#416f8f',
+    tagline: '暮らしの選択肢を、次の世代へ。', color: '#C56F2A',
     policies: [
       { theme:'子育て', status:'修正', previous:'保育料を段階的に無償化', positioning:'前回公約の重点政策', current:'所得制限を設けた保育料無償化', explanation:'財政状況と国制度の変更を踏まえ、支援を必要とする世帯から対象を広げる設計に修正しました。', centrality:88, activityLevel:72,
         activities:[{year:'2023',text:'市議会で保育料負担と待機児童について答弁'},{year:'2024',text:'第2子保育料軽減を含む関連予算案を提出'}],
@@ -16,7 +16,7 @@ export const candidates = [
     ],
   },
   {
-    id:'yamamoto', name:'山本 健司', kana:'やまもと けんじ', role:'市議・1期', age:55, tagline:'まちをつなぎ、暮らしを支える。', color:'#696687',
+    id:'yamamoto', name:'山本 健司', kana:'やまもと けんじ', role:'市議・1期', age:55, tagline:'まちをつなぎ、暮らしを支える。', color:'#8D7766',
     policies:[
       {theme:'子育て',status:'継続',previous:'放課後児童クラブの待機を減らす',positioning:'重点政策',current:'小学校施設を活用し受入枠を600人拡大',explanation:'現場の運営人材確保を前提に、学校施設の活用を具体化しました。',centrality:78,activityLevel:66,activities:[{year:'2023',text:'児童クラブの待機状況について一般質問'},{year:'2025',text:'学校施設活用の条例改正案に賛成'}],sources:[source('市議会会議録','令和5年第2回定例会 会議録','2023.06.21','児童クラブの地区別待機状況と学校施設活用について質問。'),source('質問主意書','放課後児童クラブに関する質問主意書','2024.11.08','支援員確保と余裕教室の利用可能性を質問。')]},
       {theme:'交通',status:'統合',previous:'高齢者向けバス券の年間交付',positioning:'最重点政策',current:'バス券と予約型乗合交通を選べる移動支援制度',explanation:'路線バスが少ない地域でも使える制度にするため、二つの手段を一つの支援枠にまとめました。',centrality:90,activityLevel:74,activities:[{year:'2023',text:'高齢者移動実態調査の実施を提案'},{year:'2024',text:'予約型乗合交通の実証予算に賛成'}],sources:[source('過去選挙公報','2022年 市議会議員選挙公報','2022.04.10','高齢者が外出を続けられる年間バス券制度を提案します。'),source('予算資料','予約型乗合交通 実証事業','2024.02.15','郊外2地区で電話・アプリ予約型交通を実証。')]},
@@ -25,7 +25,7 @@ export const candidates = [
     ],
   },
   {
-    id:'sato', name:'佐藤 葵', kana:'さとう あおい', role:'新人', age:39, tagline:'対話から、暮らしの仕組みをつくる。', color:'#547079', firstTime:true,
+    id:'sato', name:'佐藤 葵', kana:'さとう あおい', role:'新人', age:39, tagline:'対話から、暮らしの仕組みをつくる。', color:'#6F7477', firstTime:true,
     policies:[
       {theme:'子育て',status:null,previous:null,positioning:null,current:'子育て相談を一か所で受け付ける伴走窓口を設置',explanation:'今回が初回立候補のため、過去公約との比較対象なし',centrality:84,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 福岡未来市長選挙公報','2026.09.01','妊娠期から学齢期まで、相談先に迷わない伴走窓口を設置します。')]},
       {theme:'交通',status:null,previous:null,positioning:null,current:'地域住民とつくる小規模オンデマンド交通',explanation:'今回が初回立候補のため、過去公約との比較対象なし',centrality:72,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 福岡未来市長選挙公報','2026.09.01','地域ごとの移動需要を住民と調べ、小規模な予約型交通を設計します。')]},

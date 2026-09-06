@@ -13,14 +13,14 @@ export default function RmpmMap({ candidate }) {
     <div className="chart-wrap" aria-label={`${candidate.name}のRMPMマップ`}>
       <ResponsiveContainer width="100%" height={360}>
         <ScatterChart margin={{top:18,right:22,bottom:34,left:10}}>
-          <CartesianGrid stroke="#dbe4ea" strokeDasharray="3 5" />
-          <XAxis type="number" dataKey="x" domain={[0,100]} ticks={[0,25,50,75,100]} label={{value:'公開資料から確認可能な関連活動 →',position:'bottom',offset:12,fill:'#556879',fontSize:11}} tick={{fontSize:10,fill:'#72808c'}} />
-          <YAxis type="number" dataKey="y" domain={[0,100]} ticks={[0,25,50,75,100]} label={{value:'公約における政策の中心性 →',angle:-90,position:'insideLeft',offset:8,fill:'#556879',fontSize:11}} tick={{fontSize:10,fill:'#72808c'}} />
+          <CartesianGrid stroke="#e6e0da" strokeDasharray="3 5" />
+          <XAxis type="number" dataKey="x" domain={[0,100]} ticks={[0,25,50,75,100]} label={{value:'公開資料から確認可能な関連活動 →',position:'bottom',offset:12,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}} />
+          <YAxis type="number" dataKey="y" domain={[0,100]} ticks={[0,25,50,75,100]} label={{value:'公約における政策の中心性 →',angle:-90,position:'insideLeft',offset:8,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}} />
           <Tooltip content={<MapTooltip />} />
-          <Scatter data={data}>{data.map((item,i)=><Cell key={item.theme} fill={['#416f8f','#696687','#537789','#8197a4'][i]} stroke="#fff" strokeWidth={3} />)}</Scatter>
+          <Scatter data={data}>{data.map((item,i)=><Cell key={item.theme} fill={['#c56f2a','#8d7766','#6f7477','#b48a66'][i]} stroke="#fff" strokeWidth={3} />)}</Scatter>
         </ScatterChart>
       </ResponsiveContainer>
-      <div className="map-labels">{data.map(item=><span key={item.theme}><i style={{background:['#416f8f','#696687','#537789','#8197a4'][data.indexOf(item)]}} />{item.theme}</span>)}</div>
+      <div className="map-labels">{data.map(item=><span key={item.theme}><i style={{background:['#c56f2a','#8d7766','#6f7477','#b48a66'][data.indexOf(item)]}} />{item.theme}</span>)}</div>
     </div>
   );
 }
