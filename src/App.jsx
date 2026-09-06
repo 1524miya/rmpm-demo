@@ -16,6 +16,10 @@ function activityCounts(policy) {
   return activityKinds.map(kind => ({ kind, count: policy.activities.filter(a => classifyActivity(a.text) === kind).length }));
 }
 
+function hasCandidateResponse(policy) {
+  return policy.explanation !== '候補者からの回答はありません';
+}
+
 function centralityLabel(policy) {
   if (!policy.positioning) return '今回の公約での位置づけ';
   return policy.positioning;
@@ -27,10 +31,25 @@ function responsibilityFor(theme) {
   return '候補者個人';
 }
 
+function archiveItems(policy) {
+  const archiveSource = (type,title,date,excerpt) => ({type,title,date,excerpt,category:'架空の報道アーカイブ'});
+  const items = [];
+  if (policy.previous) items.push({year:'2022',medium:'選挙演説',quote:policy.previous,relation:'前回選挙で示した方針',source:archiveSource('選挙特集','福岡未来市選挙特集・候補者演説記録','2022.06.15',policy.previous)});
+  items.push({year:policy.previous?'2024':'2025',medium:policy.previous?'記者インタビュー':'候補者アンケート',quote:policy.previous?`${policy.theme}について、制度と財源を確認しながら具体化を検討しています。`:policy.explanation.split('。')[0],relation:policy.previous?'現在公約へ至る検討過程':'今回の提案に至った問題意識',source:archiveSource(policy.previous?'ニュース記事':'候補者アンケート',policy.previous?'福岡未来ニュース・政策インタビュー':'福岡未来市民アンケート特集',policy.previous?'2024.08.03':'2025.11.20',policy.previous?`${policy.theme}について、制度と財源を確認しながら具体化を検討しています。`:policy.explanation.split('。')[0])});
+  items.push({year:'2026',medium:'現在の公約',quote:policy.current,relation:'現在示している方針',source:{...policy.sources[policy.sources.length-1],category:'架空資料'}});
+  return items;
+}
+
+function inquiryQuestion(policy) {
+  if (!policy.previous) return 'この政策を重点として掲げた問題意識と、実現に必要な制度・財源をどう考えていますか？';
+  if (policy.status === '継続') return '前回方針を継続しながら、今回具体化した点はどこですか？';
+  if (policy.status === '優先順位変更') return '重点公約だった政策の優先順位と実施順序を変更した理由は何ですか？';
+  return `前回の方針から「${policy.status}」とした理由と、判断に用いた情報は何ですか？`;
+}
+
 function mediaCheck(policy) {
-  if (!policy.previous) return '過去比較の対象がないため、今回は公約の記載内容と制度上の実施主体を確認しました。';
-  if (policy.explanation.includes('回答')) return `関連する${policy.sources[0]?.type || '公開資料'}は確認できました。変更理由については候補者本人の回答がなく、資料から推測していません。`;
-  return `${policy.sources.map(s => s.type).slice(0, 2).join('と')}を照合し、記載された活動が公約テーマに関連することを確認しました。説明内容の妥当性や政策の効果は判定していません。`;
+  if (!policy.previous) return '過去比較は行わず、今回公約の背景と実現条件を取材で確認します。';
+  return `${policy.sources.map(s => s.type).slice(0, 2).join('・')}と過去発言を照合し、変化の理由を確認する問いを整理しています。正誤判定ではありません。`;
 }
 
 function Header({ setView }) {
@@ -62,7 +81,7 @@ function Home({ onSelect, setView }) {
 function SourceModal({ source, policy, onClose }) {
   useEffect(() => { const onKey = e => e.key === 'Escape' && onClose(); window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [onClose]);
   if (!source) return null;
-  return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="source-title" onMouseDown={e=>e.stopPropagation()}><button className="modal-close" onClick={onClose} aria-label="閉じる">×</button><span className="source-type">{source.type}・架空の一次資料</span><h3 id="source-title">{source.title}</h3><time>{source.date}</time><dl className="source-detail"><div><dt>該当箇所</dt><dd>「{source.excerpt}」</dd></div><div><dt>関連付けた理由</dt><dd>「{policy.theme}」公約と同じ対象・制度について、候補者または行政の確認可能な関与が記録されているため。</dd></div></dl><p className="modal-note">この資料はWebデモ用に作成した架空の一次資料です。実在の自治体・人物・文書とは関係ありません。</p></div></div>;
+  return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal" role="dialog" aria-modal="true" aria-labelledby="source-title" onMouseDown={e=>e.stopPropagation()}><button className="modal-close" onClick={onClose} aria-label="閉じる">×</button><span className="source-type">{source.type}・{source.category || '架空の一次資料'}</span><h3 id="source-title">{source.title}</h3><time>{source.date}</time><dl className="source-detail"><div><dt>該当箇所</dt><dd>「{source.excerpt}」</dd></div><div><dt>関連付けた理由</dt><dd>「{policy.theme}」公約と同じ対象・制度について、過去または現在の確認可能な記述があるため。</dd></div></dl><p className="modal-note">この資料はWebデモ用に作成した架空資料です。実在の自治体・人物・媒体・文書とは関係ありません。</p></div></div>;
 }
 
 function ActivityPanel({ policy, onSource }) {
@@ -78,6 +97,15 @@ function HistoryTimeline({ policy }) {
   return <div className="history-timeline">{items.map((item,i)=><div key={`${item.year}-${i}`}><time>{item.year}</time><span className="timeline-dot"/><p><small>{item.label}</small>「{item.text}」</p></div>)}</div>;
 }
 
+function ArchivePanel({ policy, onSource }) {
+  return <div className="archive-panel"><div className="ai-archive-note"><strong>AI・テキストマイニングによる検索補助</strong><span>関連する可能性のある過去発言を抽出しています。最終的な関連性は人が確認し、矛盾・嘘・公約違反を自動判定しません。</span></div><div className="archive-timeline">{archiveItems(policy).map((item,index)=><article key={`${item.year}-${item.medium}`}><time>{item.year}</time><div><span className="archive-medium">{item.medium}</span><blockquote>「{item.quote}」</blockquote><small>現在公約との関係：{item.relation}</small><button onClick={()=>onSource(item.source)}>出典：{item.source.title}　{item.source.date} →</button></div>{index<archiveItems(policy).length-1&&<i>↓</i>}</article>)}</div></div>;
+}
+
+function MediaInquiry({ policy }) {
+  const sourceTypes = [...new Set(policy.sources.map(source=>source.type))];
+  return <div className="media-inquiry"><div className="inquiry-question"><span>取材で確認する問い</span><strong>「{inquiryQuestion(policy)}」</strong></div><div className="verification-grid"><div><span>資料で確認できた点</span><p>{sourceTypes.length ? `${sourceTypes.join('・')}に、公約テーマと関連する記載があります。` : '今回公約の記載を確認しました。'}</p></div><div><span>候補者説明と一致する資料</span><p>{hasCandidateResponse(policy) ? '関連する公開資料はありますが、説明理由との一致範囲は追加取材で確認します。' : '本人回答がないため、説明との照合は行っていません。'}</p></div><div><span>追加確認が必要な点</span><p>{policy.previous ? `${policy.status}に至った判断時期と、制度・財源への影響。` : '実施主体、財源、開始時期の具体化。'}</p></div><div><span>公開資料では確認できない点</span><p>非公開の協議、関係者との調整、候補者が新たに得た情報。</p></div></div><p className="media-role-note">メディアは最終評価者ではありません。過去と現在をつなぎ、説明を深めるための確認項目です。</p></div>;
+}
+
 function PolicyFlow({ policy, onSource }) {
   const noHistory = policy.previous === null;
   return <article className="policy-flow"><div className="flow-head"><div><span className="theme-chip">{policy.theme}</span><h3>{policy.current}</h3><span className="responsibility">主な責任主体：{responsibilityFor(policy.theme)}</span></div>{policy.status && <span className="status-chip">{policy.status}</span>}</div>
@@ -88,9 +116,10 @@ function PolicyFlow({ policy, onSource }) {
       <section className="sequence-card wide"><span className="step-tag">03 公開資料から確認できる関連活動</span><ActivityPanel policy={policy} onSource={onSource}/></section>
       <section className="sequence-card current-box"><span className="step-tag">04 現在の公約</span><h4>「{policy.current}」</h4>{policy.status && <span className="history-state">前回から：{policy.status}</span>}</section>
       <section className="sequence-card wide"><span className="step-tag">05 公約履歴</span><HistoryTimeline policy={policy}/></section>
-      <section className="sequence-card explanation-card"><span className="step-tag">06 候補者本人の説明</span><p className={policy.explanation.includes('回答') ? 'no-answer':''}>「{policy.explanation}」</p><div className="response-meta"><span>回答依頼：2026年8月18日</span><span>掲載内容への訂正意見も受付</span></div></section>
-      <section className="sequence-card media-card"><span className="step-tag">07 メディアによる検証</span><span className="fiction-badge">架空の検証</span><p>{mediaCheck(policy)}</p><small>候補者説明とは独立して表示しています。</small></section>
-      <section className="sequence-card wide source-card"><span className="step-tag">08 根拠資料</span><p className="source-lead">すべての表示から一次資料へ遡れます。</p><div className="source-buttons">{policy.sources.map(s=><button key={s.title} onClick={()=>onSource(s)}><span><b>{s.type}</b>{s.title}<small>{s.date}</small></span><Arrow/></button>)}</div></section>
+      <section className="sequence-card explanation-card"><span className="step-tag">06 候補者本人の説明</span><p className={!hasCandidateResponse(policy) ? 'no-answer':''}>{hasCandidateResponse(policy) ? `「${policy.explanation}」` : policy.explanation}</p><div className="response-meta">{hasCandidateResponse(policy) ? <><span>本人回答を掲載</span><span>公開記録に表れない事情・今後の方針</span></> : <><span>回答依頼：{policy.responseRequested || '2026年8月18日'}</span><span>最終確認：{policy.lastConfirmed || '2026年8月29日'}</span></>}<span>掲載内容への訂正意見も受付</span></div><p className="explanation-incentive">回答の有無は点数化しません。説明を提供すると、記録だけでは分からない事情を有権者へ伝えられます。</p></section>
+      <section className="sequence-card wide archive-card"><span className="step-tag">07 過去発言・報道アーカイブとの照合</span><span className="fiction-badge">架空のアーカイブ</span><ArchivePanel policy={policy} onSource={onSource}/></section>
+      <section className="sequence-card wide media-card"><span className="step-tag">08 メディアによる検証・取材</span><span className="fiction-badge">架空の取材設計</span><MediaInquiry policy={policy}/></section>
+      <section className="sequence-card wide source-card"><span className="step-tag">09 根拠資料</span><p className="source-lead">すべての表示から一次資料へ遡れます。</p><div className="source-buttons">{policy.sources.map(s=><button key={s.title} onClick={()=>onSource(s)}><span><b>{s.type}</b>{s.title}<small>{s.date}</small></span><Arrow/></button>)}</div></section>
     </div>
   </article>;
 }
@@ -104,7 +133,7 @@ function CandidateDetail({ candidateId, onBack }) {
 
 function Compare() {
   const [theme,setTheme] = useState('子育て');
-  return <div className="page-shell"><div className="page-title"><span className="kicker">POLICY COMPARISON</span><h1>同じ政策でも、<br/>そこまでの経過は異なる。</h1><p>順位や点数ではなく、過去から現在までの経過と説明の違いを確認します。</p></div><div className="policy-tabs compare-tabs">{themes.map(t=><button className={theme===t?'active':''} key={t} onClick={()=>setTheme(t)}>{t}</button>)}</div><div className="compare-grid">{candidates.map(c=>{const p=c.policies.find(x=>x.theme===theme); return <article key={c.id}><header><span>{c.role}・架空候補者</span><h2>{c.name}</h2></header><dl><div><dt>前回公約</dt><dd>{p.previous || '今回が初回立候補のため、過去公約との比較対象はありません'}</dd></div><div><dt>今回公約</dt><dd>{p.current}</dd></div><div><dt>関連活動の種類</dt><dd>{p.previous ? activityCounts(p).filter(x=>x.count).map(x=><span key={x.kind}>{x.kind}　{x.count}件</span>) : '過去比較の対象となる活動は表示していません'}</dd></div><div><dt>公約履歴</dt><dd>{p.status ? `2022 前回公約 → 2026 ${p.status}` : '2026 初回立候補'}</dd></div><div><dt>候補者説明</dt><dd><span className="presence">{p.explanation.includes('回答') ? '回答なし' : p.previous ? '説明あり' : '過去比較なし'}</span>{p.explanation}</dd></div><div><dt>メディア検証</dt><dd>{mediaCheck(p)}</dd></div></dl></article>})}</div><p className="compare-note">横並びは経過を確認するための表示であり、候補者の順位・達成率・総合評価を示すものではありません。</p></div>;
+  return <div className="page-shell"><div className="page-title"><span className="kicker">POLICY COMPARISON</span><h1>同じ政策でも、<br/>そこまでの経過は異なる。</h1><p>順位や点数ではなく、過去から現在までの経過と説明の違いを確認します。</p></div><div className="policy-tabs compare-tabs">{themes.map(t=><button className={theme===t?'active':''} key={t} onClick={()=>setTheme(t)}>{t}</button>)}</div><div className="compare-grid">{candidates.map(c=>{const p=c.policies.find(x=>x.theme===theme); return <article key={c.id}><header><span>{c.role}・架空候補者</span><h2>{c.name}</h2></header><dl><div><dt>前回公約</dt><dd>{p.previous || '今回が初回立候補のため、過去公約との比較対象はありません'}</dd></div><div><dt>今回公約</dt><dd>{p.current}</dd></div><div><dt>関連活動の種類</dt><dd>{p.previous ? activityCounts(p).filter(x=>x.count).map(x=><span key={x.kind}>{x.kind}　{x.count}件</span>) : '過去比較の対象となる活動は表示していません'}</dd></div><div><dt>公約履歴</dt><dd>{p.status ? `2022 前回公約 → 2026 ${p.status}` : '2026 初回立候補'}</dd></div><div><dt>候補者本人の説明</dt><dd><span className="presence">{hasCandidateResponse(p) ? '本人説明あり' : '回答なし'}</span>{p.explanation}{!hasCandidateResponse(p)&&<small className="comparison-response-date">回答依頼：{p.responseRequested} ／ 最終確認：{p.lastConfirmed}</small>}</dd></div><div><dt>メディア検証</dt><dd>{mediaCheck(p)}</dd></div></dl></article>})}</div><p className="compare-note">本人説明の有無は点数化しません。横並びは経過を確認するための表示であり、候補者の順位・達成率・総合評価を示すものではありません。</p></div>;
 }
 
 function Method() {

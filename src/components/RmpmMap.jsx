@@ -17,6 +17,10 @@ function counts(policy) {
   return kinds.map(kind => ({ kind, count: policy.activities.filter(a => classify(a.text) === kind).length }));
 }
 
+function hasResponse(policy) {
+  return policy.explanation !== '候補者からの回答はありません';
+}
+
 function verification(policy) {
   if (!policy.previous) return '今回公約の記載内容と制度上の実施主体を確認。過去比較は行っていません。';
   if (policy.explanation.includes('回答')) return `${policy.sources[0]?.type || '公開資料'}で関連活動を確認。変更理由は資料から推測していません。`;
@@ -75,7 +79,7 @@ function DetailPanel({ item, onSource, onClose }) {
     ['候補者本人の説明', policy.explanation],
     ['メディアによる検証', verification(policy)],
   ];
-  return <aside className="map-detail-panel" aria-live="polite"><header><div><span className="detail-question">なぜこの位置なのか？</span><span>{candidate.role}・架空候補者</span><h3>{candidate.name}</h3></div><div className="detail-actions"><span className="selected-policy">{policy.theme}</span><button onClick={onClose} aria-label="選択を解除">×</button></div></header><div className="accountability-steps">{steps.map(([label,text],i)=><section key={label}><i>{String(i+1).padStart(2,'0')}</i><div><small>{label}</small><p>{text}</p>{label.includes('関連活動') && <div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>出典を見る：{source.type}</button>)}</div>}</div></section>)}<section><i>{String(steps.length+1).padStart(2,'0')}</i><div><small>根拠資料</small><p>一次資料の該当箇所と、公約に関連付けた理由を確認できます。</p><div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>一次資料を確認 →</button>)}</div></div></section><section className="voter-step"><i>{String(steps.length+2).padStart(2,'0')}</i><div><small>有権者が判断</small><p>ここまでの情報を基に、最終的に判断するのは有権者です。</p></div></section></div></aside>;
+  return <aside className="map-detail-panel" aria-live="polite"><header><div><span className="detail-question">なぜこの位置なのか？</span><span>{candidate.role}・架空候補者</span><h3>{candidate.name}</h3></div><div className="detail-actions"><span className="selected-policy">{policy.theme}</span><button onClick={onClose} aria-label="選択を解除">×</button></div></header><div className="accountability-steps">{steps.map(([label,text],i)=><section key={label}><i>{String(i+1).padStart(2,'0')}</i><div><small>{label}</small><p>{text}</p>{label.includes('関連活動') && <div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>出典を見る：{source.type}</button>)}</div>}{label==='候補者本人の説明'&&!hasResponse(policy)&&<span className="response-facts">回答依頼：{policy.responseRequested}　／　最終確認：{policy.lastConfirmed}</span>}{label==='候補者本人の説明'&&<span className="response-principle">説明の有無は点数化しません。</span>}</div></section>)}<section><i>{String(steps.length+1).padStart(2,'0')}</i><div><small>根拠資料</small><p>一次資料の該当箇所と、公約に関連付けた理由を確認できます。</p><div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>一次資料を確認 →</button>)}</div></div></section><section className="voter-step"><i>{String(steps.length+2).padStart(2,'0')}</i><div><small>有権者が判断</small><p>ここまでの情報を基に、最終的に判断するのは有権者です。</p></div></section></div></aside>;
 }
 
 export default function RmpmMap({ candidate, candidates, initialTheme, onSource }) {
