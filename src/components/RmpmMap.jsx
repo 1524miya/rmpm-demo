@@ -12,7 +12,7 @@ export default function RmpmMap({ candidate }) {
   const data = candidate.policies.filter(p => p.activityLevel !== null).map(p => ({ x:p.activityLevel, y:p.centrality, theme:p.theme, status:p.status }));
   if (!data.length) return <div className="map-empty"><strong>比較対象なし</strong><p>今回が初回立候補のため、過去公約と確認可能な活動の位置は表示していません。</p></div>;
   return (
-    <div className="chart-wrap" aria-label={`${candidate.name}のRMPMマップ`}>
+    <div className="chart-wrap" aria-label={`${candidate.name}のRMPM`}>
       <ResponsiveContainer width="100%" height={360}>
         <ScatterChart margin={{top:18,right:22,bottom:34,left:10}}>
           <CartesianGrid stroke="#e6e0da" strokeDasharray="3 5" />
