@@ -3,7 +3,9 @@ import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid
 function MapTooltip({ active, payload }) {
   if (!active || !payload?.[0]) return null;
   const item = payload[0].payload;
-  return <div className="map-tooltip"><strong>{item.theme}</strong><span>関連活動 {item.x}</span><span>政策の中心性 {item.y}</span></div>;
+  const activity = item.x < 34 ? '確認記録は限定的' : item.x < 67 ? '複数の確認記録' : '継続的な確認記録';
+  const centrality = item.y < 34 ? '関連政策' : item.y < 67 ? '重点政策' : '中心政策';
+  return <div className="map-tooltip"><strong>{item.theme}</strong><span>関連活動：{activity}</span><span>公約内の位置：{centrality}</span></div>;
 }
 
 export default function RmpmMap({ candidate }) {
@@ -14,8 +16,8 @@ export default function RmpmMap({ candidate }) {
       <ResponsiveContainer width="100%" height={360}>
         <ScatterChart margin={{top:18,right:22,bottom:34,left:10}}>
           <CartesianGrid stroke="#e6e0da" strokeDasharray="3 5" />
-          <XAxis type="number" dataKey="x" domain={[0,100]} ticks={[0,25,50,75,100]} label={{value:'公開資料から確認可能な関連活動 →',position:'bottom',offset:12,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}} />
-          <YAxis type="number" dataKey="y" domain={[0,100]} ticks={[0,25,50,75,100]} label={{value:'公約における政策の中心性 →',angle:-90,position:'insideLeft',offset:8,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}} />
+          <XAxis type="number" dataKey="x" domain={[0,100]} ticks={[10,50,90]} tickFormatter={value => value < 34 ? '限定的' : value < 67 ? '複数' : '継続的'} label={{value:'公開資料から確認可能な関連活動 →',position:'bottom',offset:12,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}} />
+          <YAxis type="number" dataKey="y" domain={[0,100]} ticks={[10,50,90]} tickFormatter={value => value < 34 ? '関連' : value < 67 ? '重点' : '中心'} label={{value:'公約における政策の中心性 →',angle:-90,position:'insideLeft',offset:8,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}} />
           <Tooltip content={<MapTooltip />} />
           <Scatter data={data}>{data.map((item,i)=><Cell key={item.theme} fill={['#c56f2a','#8d7766','#6f7477','#b48a66'][i]} stroke="#fff" strokeWidth={3} />)}</Scatter>
         </ScatterChart>
