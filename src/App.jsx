@@ -1,7 +1,6 @@
-'use client';
 import { useState } from 'react';
-import { candidates, themes, methodology } from '../data/mockData';
-import RmpmMap from '../components/RmpmMap';
+import { candidates, themes, methodology } from './data/mockData';
+import RmpmMap from './components/RmpmMap';
 
 const Arrow = () => <span aria-hidden="true">→</span>;
 

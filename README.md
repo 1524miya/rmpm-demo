@@ -4,14 +4,14 @@
 
 ## 1. 作成したファイル一覧
 
-- `app/page.jsx` — トップ、候補者詳細、政策比較、方法論、資料モーダルの画面と操作
-- `app/layout.jsx` — 日本語設定、ページ・SNS共有メタデータ
-- `app/globals.css` — 全画面のレイアウト、配色、レスポンシブCSS
-- `components/RmpmMap.jsx` — RechartsによるRMPM ScatterChart
-- `data/mockData.js` — 架空候補者3人、4政策、活動、説明、一次資料データ
+- `index.html` — Vite SPAのHTMLエントリとページ・SNS共有メタデータ
+- `src/main.jsx` — Reactの起動エントリ
+- `src/App.jsx` — トップ、候補者詳細、政策比較、方法論、資料モーダルの画面と操作
+- `src/index.css` — 全画面のレイアウト、配色、レスポンシブCSS
+- `src/components/RmpmMap.jsx` — RechartsによるRMPM ScatterChart
+- `src/data/mockData.js` — 架空候補者3人、4政策、活動、説明、一次資料データ
 - `public/og.png` — SNS共有用プレビュー画像
-- `.openai/hosting.json` — Sites向けホスティング設定
-- `vite.config.ts` — Vite / Vinext設定
+- `vite.config.js` — 通常のReact + Vite SPA設定
 - `package.json` / `pnpm-lock.yaml` — 依存関係とコマンド
 
 ## 2. 起動方法
@@ -23,7 +23,15 @@ npm install
 npm run dev
 ```
 
-起動後、ターミナルに表示されたURL（通常は `http://localhost:3000`）を開きます。静的なプロダクションビルドは `npm run build` です。Vercelではリポジトリのルートをこのフォルダに設定し、ビルドコマンドを `npm run build` に設定できます。
+起動後、`http://localhost:3000` を開きます。静的なプロダクションビルドは `npm run build` で、成果物は `dist/` に生成されます。
+
+### Vercel設定
+
+- Framework Preset: `Vite`（または `Other`）
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+SSR、React Server Components、Next.js、Vinextは使用していません。
 
 ## 3. デモを見る順番
 

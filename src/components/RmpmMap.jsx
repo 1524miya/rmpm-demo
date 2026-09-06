@@ -1,4 +1,3 @@
-'use client';
 import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 
 function MapTooltip({ active, payload }) {
