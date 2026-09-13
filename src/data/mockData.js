@@ -1,36 +1,55 @@
 export const themes = ['子育て', '交通', '医療', 'デジタル行政'];
 
+export const election = {
+  municipality: '未来市',
+  title: '未来市長選挙 2026',
+  council: '未来市議会',
+  disclaimer: '本デモに登場する自治体・候補者・活動記録等はすべて架空です',
+};
+
+export const activityFrameworks = {
+  national: ['国会質問','委員会質問','質問主意書','法案提出・共同提出','議決','その他公開記録'],
+  local: ['本会議質問','委員会活動','条例案','請願・陳情関連','行政への提言','その他公開記録'],
+  executive: ['予算案','条例提出','政策計画','事業実施','行政答弁','進捗報告'],
+};
+
+export const regions = [
+  {id:'mirai',name:'未来市',selected:true,items:[['本会議議事録','公開'],['委員会議事録','一部公開'],['質疑・答弁記録','公開'],['議員別活動記録','一部あり'],['公開資料の検索性','全文検索可能'],['更新状況','最新']],note:'委員会議事録は一部のみ公開されているため、確認可能な政治活動には限界があります。'},
+  {id:'aoba',name:'青葉市',items:[['本会議議事録','公開'],['委員会議事録','一部公開'],['質疑・答弁記録','一部公開'],['議員別活動記録','一部あり'],['公開資料の検索性','PDFのみ'],['更新状況','更新遅れ']],note:'検索と更新に制約があり、同じ条件で活動記録を確認できない場合があります。'},
+  {id:'kosei',name:'光星市',items:[['本会議議事録','公開'],['委員会議事録','未公開'],['質疑・答弁記録','一部公開'],['議員別活動記録','なし'],['公開資料の検索性','検索困難'],['更新状況','不明']],note:'委員会議事録が未公開のため、活動を確認できない原因が地域側の公開状況にある場合があります。'},
+];
+
 const source = (type, title, date, excerpt) => ({ type, title, date, excerpt });
 
 export const candidates = [
   {
-    id: 'tanaka', name: '田中 未来', kana: 'たなか みらい', role: '現職・2期', age: 48,
+    id: 'tanaka', name: '田中 未来', kana: 'たなか みらい', role: '現職・2期', officeType:'executive', age: 48,
     tagline: '暮らしの選択肢を、次の世代へ。', color: '#C56F2A',
     policies: [
-      { theme:'子育て', status:'修正', previous:'保育料を段階的に無償化', positioning:'前回公約の重点政策', current:'所得制限を設けた保育料無償化', explanation:'財政状況と国制度の変更を踏まえ、支援を必要とする世帯から対象を広げる設計に修正しました。', centrality:88, activityLevel:72,
-        activities:[{year:'2023',text:'市議会で保育料負担と待機児童について答弁'},{year:'2024',text:'第2子保育料軽減を含む関連予算案を提出'}],
-        sources:[source('過去選挙公報','2022年 福岡未来市長選挙公報','2022.10.02','子育て世帯の負担を減らすため、保育料の段階的な無償化を進めます。'),source('市議会会議録','令和5年第3回定例会 会議録','2023.09.14','保育料負担の軽減と受け皿整備を一体的に検討する旨を答弁。'),source('予算資料','令和6年度 子育て支援関連予算','2024.02.20','第2子保育料軽減事業 2億1,000万円を計上。')] },
-      { theme:'交通', status:'継続', previous:'東西循環バスを3路線新設', positioning:'地域別政策の一つ', current:'東西循環バスの実証運行を2路線へ拡大', explanation:'利用実績を確認しながら、運転手不足に対応できる路線設計で段階的に進めます。', centrality:64, activityLevel:58, activities:[{year:'2023',text:'地域公共交通計画の改定案を公表'},{year:'2025',text:'1路線で実証運行を開始'}], sources:[source('過去選挙公報','2022年 福岡未来市長選挙公報','2022.10.02','東西地域をつなぐ循環バス3路線の新設を目指します。'),source('予算資料','地域交通実証事業 概要','2025.03.01','東部地区で6か月間の循環バス実証運行を行う。')] },
-      { theme:'医療', status:'実施済み', previous:'休日夜間診療の予約情報をオンライン化', positioning:'生活基盤政策', current:'オンライン案内の対象医療機関を拡大', explanation:'予約情報の公開を開始したため、次は参加医療機関と掲載情報の拡充に移ります。', centrality:55, activityLevel:82, activities:[{year:'2023',text:'医師会との共同検討会を設置'},{year:'2024',text:'休日夜間診療案内サイトを公開'}], sources:[source('市議会会議録','福祉保健委員会 会議録','2023.06.09','休日夜間診療の案内方法について、市医師会と協議を開始。'),source('予算資料','医療情報デジタル化事業','2024.01.28','休日夜間の診療状況を案内するシステム整備費を計上。')] },
-      { theme:'デジタル行政', status:'優先順位変更', previous:'全行政手続の80%をオンライン化', positioning:'最重点政策', current:'利用頻度の高い30手続きを優先してオンライン化', explanation:'対象手続きを一度に広げるより、利用件数が多く効果を検証しやすい手続から改善する方針へ変更しました。窓口支援も残し、利用状況を公開しながら対象を増やします。', centrality:76, activityLevel:48, activities:[{year:'2023',text:'オンライン申請基盤の調達仕様を公開'},{year:'2025',text:'12手続でオンライン受付を開始'}], sources:[source('質問主意書','行政手続オンライン化に関する回答書','2025.04.18','対象候補82手続のうち、利用頻度等を踏まえ12手続で受付を開始。')] },
+      { theme:'子育て', status:'修正', recordStatus:'確認済み', recordMaterial:'本会議議事録・予算資料 公開', previous:'保育料を段階的に無償化', positioning:'前回公約の重点政策', current:'所得制限を設けた保育料無償化', explanation:'財政状況と国制度の変更を踏まえ、支援を必要とする世帯から対象を広げる設計に修正しました。', centrality:88, activityLevel:72,
+        activities:[{year:'2023',type:'行政答弁',text:'市議会で保育料負担と待機児童について答弁'},{year:'2024',type:'予算案',text:'第2子保育料軽減を含む関連予算案を提出'}],
+        sources:[source('過去選挙公報','2022年 未来市長選挙公報','2022.10.02','子育て世帯の負担を減らすため、保育料の段階的な無償化を進めます。'),source('未来市議会会議録','令和5年第3回定例会 会議録','2023.09.14','保育料負担の軽減と受け皿整備を一体的に検討する旨を答弁。'),source('予算資料','令和6年度 子育て支援関連予算','2024.02.20','第2子保育料軽減事業 2億1,000万円を計上。')] },
+      { theme:'交通', status:'継続', recordStatus:'一部のみ公開', recordMaterial:'政策計画 公開／協議記録 一部公開', previous:'東西循環バスを3路線新設', positioning:'地域別政策の一つ', current:'東西循環バスの実証運行を2路線へ拡大', explanation:'利用実績を確認しながら、運転手不足に対応できる路線設計で段階的に進めます。', centrality:64, activityLevel:58, activities:[{year:'2023',type:'政策計画',text:'地域公共交通計画の改定案を公表'},{year:'2025',type:'事業実施',text:'1路線で実証運行を開始'}], sources:[source('過去選挙公報','2022年 未来市長選挙公報','2022.10.02','東西地域をつなぐ循環バス3路線の新設を目指します。'),source('行政資料','地域交通実証事業 概要','2025.03.01','東部地区で6か月間の循環バス実証運行を行う。')] },
+      { theme:'医療', status:'達成', recordStatus:'確認済み', recordMaterial:'委員会資料・予算資料 公開', previous:'休日夜間診療の予約情報をオンライン化', positioning:'生活基盤政策', current:'オンライン案内の対象医療機関を拡大', explanation:'予約情報の公開を開始したため、次は参加医療機関と掲載情報の拡充に移ります。', centrality:55, activityLevel:82, activities:[{year:'2023',type:'政策計画',text:'医師会との共同検討会を設置'},{year:'2024',type:'事業実施',text:'休日夜間診療案内サイトを公開'}], sources:[source('委員会資料','未来市議会 福祉保健委員会資料','2023.06.09','休日夜間診療の案内方法について、市医師会と協議を開始。'),source('予算資料','医療情報デジタル化事業','2024.01.28','休日夜間の診療状況を案内するシステム整備費を計上。')] },
+      { theme:'デジタル行政', status:'優先順位変更', recordStatus:'一部のみ公開', recordMaterial:'調達資料 公開／庁内調整記録 未公開', previous:'全行政手続の80%をオンライン化', positioning:'最重点政策', current:'利用頻度の高い30手続きを優先してオンライン化', explanation:'対象手続きを一度に広げるより、利用件数が多く効果を検証しやすい手続から改善する方針へ変更しました。窓口支援も残し、利用状況を公開しながら対象を増やします。', centrality:76, activityLevel:48, activities:[{year:'2023',type:'政策計画',text:'オンライン申請基盤の調達仕様を公開'},{year:'2025',type:'進捗報告',text:'12手続でオンライン受付を開始'}], sources:[source('行政資料','行政手続オンライン化に関する進捗資料','2025.04.18','対象候補82手続のうち、利用頻度等を踏まえ12手続で受付を開始。')] },
     ],
   },
   {
-    id:'yamamoto', name:'山本 健司', kana:'やまもと けんじ', role:'市議・1期', age:55, tagline:'まちをつなぎ、暮らしを支える。', color:'#8D7766',
+    id:'yamamoto', name:'山本 健司', kana:'やまもと けんじ', role:'市議・1期', officeType:'local', age:55, tagline:'まちをつなぎ、暮らしを支える。', color:'#8D7766',
     policies:[
-      {theme:'子育て',status:'継続',previous:'放課後児童クラブの待機を減らす',positioning:'重点政策',current:'小学校施設を活用し受入枠を600人拡大',explanation:'現場の運営人材確保を前提に、学校施設の活用を具体化しました。',centrality:78,activityLevel:66,activities:[{year:'2023',text:'児童クラブの待機状況について一般質問'},{year:'2025',text:'学校施設活用の条例改正案に賛成'}],sources:[source('市議会会議録','令和5年第2回定例会 会議録','2023.06.21','児童クラブの地区別待機状況と学校施設活用について質問。'),source('質問主意書','放課後児童クラブに関する質問主意書','2024.11.08','支援員確保と余裕教室の利用可能性を質問。')]},
-      {theme:'交通',status:'統合',previous:'高齢者向けバス券の年間交付',positioning:'最重点政策',current:'バス券と予約型乗合交通を選べる移動支援制度',explanation:'路線バスが少ない地域でも使える制度にするため、二つの手段を一つの支援枠にまとめました。',centrality:90,activityLevel:74,activities:[{year:'2023',text:'高齢者移動実態調査の実施を提案'},{year:'2024',text:'予約型乗合交通の実証予算に賛成'}],sources:[source('過去選挙公報','2022年 市議会議員選挙公報','2022.04.10','高齢者が外出を続けられる年間バス券制度を提案します。'),source('予算資料','予約型乗合交通 実証事業','2024.02.15','郊外2地区で電話・アプリ予約型交通を実証。')]},
-      {theme:'医療',status:'取り下げ',previous:'市立診療所を北部地区に新設',positioning:'地域別重点政策',current:'既存医療機関への巡回診療支援',explanation:'医療従事者の確保が難しいとの調査結果を受け、既存施設を活かす方式へ変更しました。',centrality:61,activityLevel:43,activities:[{year:'2023',text:'北部地区の医療アクセスについて質問'},{year:'2024',text:'医療人材確保調査の結果説明を受領'}],sources:[source('市議会会議録','地域医療特別委員会 会議録','2024.07.05','常設診療所に必要な人材確保の見通しについて質疑。')]},
-      {theme:'デジタル行政',status:'継続',previous:'窓口の待ち時間をオンラインで見える化',positioning:'改善提案',current:'混雑状況と手続所要時間のリアルタイム表示',explanation:'候補者からの回答はありません',responseRequested:'2026年8月18日',lastConfirmed:'2026年8月29日',centrality:52,activityLevel:36,activities:[{year:'2024',text:'窓口混雑データの公開可否を質問'}],sources:[source('質問主意書','窓口混雑情報に関する質問主意書','2024.05.17','庁舎窓口の待ち時間データの取得・公開状況を質問。')]},
+      {theme:'子育て',status:'継続',recordStatus:'確認済み',recordMaterial:'本会議議事録 公開',previous:'放課後児童クラブの待機を減らす',positioning:'重点政策',current:'小学校施設を活用し受入枠を600人拡大',explanation:'現場の運営人材確保を前提に、学校施設の活用を具体化しました。',centrality:78,activityLevel:66,activities:[{year:'2023',type:'本会議質問',text:'児童クラブの待機状況について一般質問'},{year:'2025',type:'条例案',text:'学校施設活用の条例改正案に賛成'}],sources:[source('未来市議会会議録','令和5年第2回定例会 会議録','2023.06.21','児童クラブの地区別待機状況と学校施設活用について質問。'),source('議員提出資料','放課後児童クラブに関する照会資料','2024.11.08','支援員確保と余裕教室の利用可能性を照会。')]},
+      {theme:'交通',status:'統合',recordStatus:'一部のみ公開',recordMaterial:'本会議議事録 公開／委員会議事録 一部公開',previous:'高齢者向けバス券の年間交付',positioning:'最重点政策',current:'バス券と予約型乗合交通を選べる移動支援制度',explanation:'路線バスが少ない地域でも使える制度にするため、二つの手段を一つの支援枠にまとめました。',centrality:90,activityLevel:74,activities:[{year:'2023',type:'行政への提言',text:'高齢者移動実態調査の実施を提案'},{year:'2024',type:'委員会活動',text:'予約型乗合交通の実証予算を審議'}],sources:[source('過去選挙公報','2022年 未来市議会議員選挙公報','2022.04.10','高齢者が外出を続けられる年間バス券制度を提案します。'),source('予算資料','予約型乗合交通 実証事業','2024.02.15','郊外2地区で電話・アプリ予約型交通を実証。')]},
+      {theme:'医療',status:'変更',recordStatus:'該当記録が未公開',recordMaterial:'該当委員会議事録 未公開',previous:'市立診療所を北部地区に新設',positioning:'地域別重点政策',current:'既存医療機関への巡回診療支援',explanation:'医療従事者の確保が難しいとの調査結果を受け、既存施設を活かす方式へ変更しました。',centrality:61,activityLevel:null,activities:[],recordNote:'委員会で扱われた可能性がありますが、該当期間の議事録が未公開のため活動全体を確認できません。',sources:[source('行政資料','地域医療人材調査 概要版','2024.07.05','常設診療所に必要な人材確保の見通しを調査。')]},
+      {theme:'デジタル行政',status:'継続',recordStatus:'本人確認・取材待ち',recordMaterial:'本会議議事録 公開／本人説明 確認中',previous:'窓口の待ち時間をオンラインで見える化',positioning:'改善提案',current:'混雑状況と手続所要時間のリアルタイム表示',explanation:'候補者からの回答はありません',responseRequested:'2026年8月18日',lastConfirmed:'2026年8月29日',centrality:52,activityLevel:36,activities:[{year:'2024',type:'本会議質問',text:'窓口混雑データの公開可否を質問'}],sources:[source('未来市議会会議録','窓口混雑情報に関する一般質問記録','2024.05.17','庁舎窓口の待ち時間データの取得・公開状況を質問。')]},
     ],
   },
   {
-    id:'sato', name:'佐藤 葵', kana:'さとう あおい', role:'新人', age:39, tagline:'対話から、暮らしの仕組みをつくる。', color:'#6F7477', firstTime:true,
+    id:'sato', name:'佐藤 葵', kana:'さとう あおい', role:'新人', officeType:'local', age:39, tagline:'対話から、暮らしの仕組みをつくる。', color:'#6F7477', firstTime:true,
     policies:[
-      {theme:'子育て',status:null,previous:null,positioning:null,current:'子育て相談を一か所で受け付ける伴走窓口を設置',explanation:'子育て世代への聞き取りを続ける中で、制度ごとに相談先が分かれ、必要な支援へたどり着きにくいという声を多く聞きました。既存窓口をつなぐ伴走型の受付を重点公約として提案しています。',centrality:84,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 福岡未来市長選挙公報','2026.09.01','妊娠期から学齢期まで、相談先に迷わない伴走窓口を設置します。')]},
-      {theme:'交通',status:null,previous:null,positioning:null,current:'地域住民とつくる小規模オンデマンド交通',explanation:'地域の聞き取りで、路線を増やすだけでは時間帯や目的地の需要に合わないと考えました。既存交通事業者と小規模な実証から始め、利用状況と費用を公開して設計を見直します。',centrality:72,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 福岡未来市長選挙公報','2026.09.01','地域ごとの移動需要を住民と調べ、小規模な予約型交通を設計します。')]},
-      {theme:'医療',status:null,previous:null,positioning:null,current:'若年層のこころの相談窓口を夜間まで開設',explanation:'若者支援団体で相談活動に関わり、学校や仕事の後に利用できる窓口が不足していると感じました。医療機関と役割を分け、まず相談と適切な支援先への接続を担う体制を提案します。',centrality:68,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 福岡未来市長選挙公報','2026.09.01','若年層が仕事や学校の後にも相談できる時間帯を設けます。')]},
-      {theme:'デジタル行政',status:null,previous:null,positioning:null,current:'申請前に必要書類が分かる手続ナビを公開',explanation:'市民相談のボランティアで、必要書類が分からず窓口を往復する事例を見てきました。新しい大規模システムではなく、既存情報を整理する手続ナビから段階的に始めます。',centrality:60,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 福岡未来市長選挙公報','2026.09.01','質問に答えると必要書類と窓口が分かる手続ナビを公開します。')]},
+      {theme:'子育て',status:null,recordStatus:'比較対象なし',recordMaterial:'今回選挙公報 公開',previous:null,positioning:null,current:'子育て相談を一か所で受け付ける伴走窓口を設置',explanation:'子育て世代への聞き取りを続ける中で、制度ごとに相談先が分かれ、必要な支援へたどり着きにくいという声を多く聞きました。既存窓口をつなぐ伴走型の受付を重点公約として提案しています。',centrality:84,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 未来市長選挙公報','2026.09.01','妊娠期から学齢期まで、相談先に迷わない伴走窓口を設置します。')]},
+      {theme:'交通',status:null,recordStatus:'比較対象なし',recordMaterial:'今回選挙公報 公開',previous:null,positioning:null,current:'地域住民とつくる小規模オンデマンド交通',explanation:'地域の聞き取りで、路線を増やすだけでは時間帯や目的地の需要に合わないと考えました。既存交通事業者と小規模な実証から始め、利用状況と費用を公開して設計を見直します。',centrality:72,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 未来市長選挙公報','2026.09.01','地域ごとの移動需要を住民と調べ、小規模な予約型交通を設計します。')]},
+      {theme:'医療',status:null,recordStatus:'比較対象なし',recordMaterial:'今回選挙公報 公開',previous:null,positioning:null,current:'若年層のこころの相談窓口を夜間まで開設',explanation:'若者支援団体で相談活動に関わり、学校や仕事の後に利用できる窓口が不足していると感じました。医療機関と役割を分け、まず相談と適切な支援先への接続を担う体制を提案します。',centrality:68,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 未来市長選挙公報','2026.09.01','若年層が仕事や学校の後にも相談できる時間帯を設けます。')]},
+      {theme:'デジタル行政',status:null,recordStatus:'比較対象なし',recordMaterial:'今回選挙公報 公開',previous:null,positioning:null,current:'申請前に必要書類が分かる手続ナビを公開',explanation:'市民相談のボランティアで、必要書類が分からず窓口を往復する事例を見てきました。新しい大規模システムではなく、既存情報を整理する手続ナビから段階的に始めます。',centrality:60,activityLevel:null,activities:[],sources:[source('今回選挙公報','2026年 未来市長選挙公報','2026.09.01','質問に答えると必要書類と窓口が分かる手続ナビを公開します。')]},
     ],
   },
 ];
@@ -42,4 +61,5 @@ export const methodology = [
   ['見えない活動もある','非公開の調整や資料に表れない活動が存在することを前提にします。'],
   ['変更を否定しない','状況に応じた政策変更そのものを、良い・悪いとは判定しません。'],
   ['理由を検証できる','続けた理由、変えた理由を候補者が説明できる場をつくります。'],
+  ['単純な賛否にしない','RMPMは政策を賛成・反対の単純な5段階に分類しません。財源、制度、社会情勢、変更理由まで合わせて確認します。'],
 ];
