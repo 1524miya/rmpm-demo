@@ -95,3 +95,22 @@ footer{background:#34312e}footer p{color:#d5cec7}footer>span{color:#bdb5ae}
 .detail-shell>.back-button{position:fixed;z-index:9;top:98px;left:max(14px,calc((100vw - 1420px)/2));margin:0;border:1px solid #dfd5cc;background:rgba(255,255,255,.96);padding:10px 13px;color:#8f4b13;box-shadow:0 4px 14px rgba(69,52,39,.08);white-space:nowrap}.detail-shell>.back-button:hover{border-color:#c86617;background:#fff7ed}
 @media(max-width:1400px){.detail-shell>.back-button{top:auto;bottom:18px;left:18px}}
 @media(max-width:800px){.detail-shell>.back-button{bottom:14px;left:14px;padding:11px 14px}}
+
+/* Preserve the RMPM coordinate system on narrow screens. */
+.mobile-chart-hint{display:none}
+@media(max-width:800px){
+  html,body,#root,main{max-width:100%;overflow-x:clip}
+  .detail-shell,.policy-flow,.evidence-sequence,.sequence-card{min-width:0;max-width:100%}
+  .sequence-card,.sequence-card *{overflow-wrap:anywhere}
+  .archive-compare>article,.media-subject>div,.media-step{min-width:0}
+  .map-controls{margin-bottom:10px}
+  .mode-switch{width:100%}
+  .mode-switch button{padding:10px 8px;line-height:1.45;white-space:normal}
+  .promise-mode-intro{padding:14px 15px}
+  .compact-alert{padding:12px 14px}
+  .mobile-chart-hint{display:block;margin:10px 2px 6px;color:#7b6554;font-size:9px;line-height:1.6;text-align:right}
+  .interactive-chart{width:100%;max-width:100%;padding:8px 0 10px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;scrollbar-width:thin}
+  .interactive-chart .recharts-responsive-container{width:780px!important;min-width:780px!important;max-width:none!important;flex:0 0 780px}
+  .interactive-chart svg{display:block;max-width:none}
+  .interactive-chart .map-labels{width:780px;min-width:780px;justify-content:center}
+}
