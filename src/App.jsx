@@ -77,7 +77,7 @@ function mediaCheck(policy) {
 function Header({ setView }) {
   return <header className="site-header">
     <button className="brand brand-button" onClick={() => setView('home')}>RMPM <span>{election.title}</span></button>
-    <nav aria-label="主要ナビゲーション"><button onClick={() => setView('home')}>候補者</button><button onClick={() => setView('compare')}>政策比較</button><button onClick={() => setView('method')}>方法論・透明性</button></nav>
+    <nav aria-label="主要ナビゲーション"><button className="home-nav-button" onClick={() => setView('home')}>← ホームに戻る</button><button onClick={() => setView('home')}>候補者</button><button onClick={() => setView('compare')}>政策比較</button><button onClick={() => setView('method')}>方法論・透明性</button></nav>
     <button className="menu-button" onClick={() => setView('method')} aria-label="方法論を開く">考え方</button>
   </header>;
 }
