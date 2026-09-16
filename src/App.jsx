@@ -2,13 +2,10 @@ import { useEffect, useState } from 'react';
 import { candidates, themes, methodology, election, regions, activityFrameworks } from './data/mockData';
 import RmpmMap from './components/RmpmMap';
 import RoleIcon from './components/RoleIcon';
+import CandidatePortrait from './components/CandidatePortrait';
 
 const Arrow = () => <span aria-hidden="true">→</span>;
 const activityKinds = ['質問', '質問主意書', '法案提出・共同提出', '議案・予算等への関与'];
-
-function CandidatePortrait({ candidate, size = 'card' }) {
-  return <img className={`candidate-portrait candidate-portrait-${size}`} src={candidate.portrait} alt={`${candidate.name}候補のドット絵アイコン`}/>;
-}
 
 function classifyActivity(text) {
   if (text.includes('質問主意書')) return '質問主意書';
@@ -159,7 +156,7 @@ function MediaInquiry({ policy, candidate, onSource }) {
     [`${candidate.name}候補の説明`, explanationSummary, 'explanation'],
     [`${candidate.name}候補の「${policy.theme}」に関する追加取材`, investigation, 'investigation'],
   ];
-  return <div className="media-inquiry"><div className="media-subject" aria-label="検証対象"><div><small>候補者</small><strong>{candidate.name}</strong></div><div><small>政策テーマ</small><strong>{policy.theme}</strong></div><div className="media-subject-promise"><small>対象公約</small><strong>「{policy.current}」</strong></div></div><div className="media-inquiry-flow">{steps.map(([label,text,tone],index)=><div className="media-step-wrap" key={label}><section className={`media-step media-step-${tone}`}>{tone==='question'?<div className="media-step-with-icon"><RoleIcon role="reporter"/><div><span>{String(index+1).padStart(2,'0')}　{label}</span><p>{text}</p></div></div>:<><span>{String(index+1).padStart(2,'0')}　{label}</span><p>{text}</p></>}</section><i aria-hidden="true">↓</i></div>)}<section className="media-step media-step-sources"><span>05　出典</span><p>{candidate.name}候補の「{policy.theme}」公約について、確認に使った資料の該当箇所まで遡れます。</p><div>{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source)}>出典を見る：{source.type} →</button>)}</div></section></div><p className="media-role-note">変化は評価ではなく、説明・取材・根拠確認へ進む入口です。最終判断は有権者に委ねます。</p></div>;
+  return <div className="media-inquiry"><div className="media-subject" aria-label="検証対象"><div><small>候補者</small><strong>{candidate.name}</strong></div><div><small>政策テーマ</small><strong>{policy.theme}</strong></div><div className="media-subject-promise"><small>対象公約</small><strong>「{policy.current}」</strong></div></div><div className="media-inquiry-flow">{steps.map(([label,text,tone],index)=><div className="media-step-wrap" key={label}><section className={`media-step media-step-${tone}`}>{tone==='question'?<div className="media-step-with-icon"><RoleIcon role="reporter"/><div><span>{String(index+1).padStart(2,'0')}　{label}</span><p>{text}</p></div></div>:tone==='explanation'?<div className="media-step-with-icon"><CandidatePortrait candidate={candidate} size="inline"/><div><span>{String(index+1).padStart(2,'0')}　{label}</span><p>{text}</p></div></div>:<><span>{String(index+1).padStart(2,'0')}　{label}</span><p>{text}</p></>}</section><i aria-hidden="true">↓</i></div>)}<section className="media-step media-step-sources"><span>05　出典</span><p>{candidate.name}候補の「{policy.theme}」公約について、確認に使った資料の該当箇所まで遡れます。</p><div>{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source)}>出典を見る：{source.type} →</button>)}</div></section></div><p className="media-role-note">変化は評価ではなく、説明・取材・根拠確認へ進む入口です。最終判断は有権者に委ねます。</p></div>;
 }
 
 function PolicyFlow({ policy, candidate, onSource }) {
