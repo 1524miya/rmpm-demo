@@ -204,5 +204,5 @@ export default function App() {
   const [view,setView] = useState('home'); const [candidateId,setCandidateId] = useState('tanaka');
   const changeView=v=>{setView(v);window.scrollTo(0,0)};
   const selectCandidate=id=>{setCandidateId(id);changeView('candidate')};
-  return <main><Header setView={changeView}/>{view==='home'&&<Home onSelect={selectCandidate} setView={changeView}/>} {view==='candidate'&&<CandidateDetail candidateId={candidateId} onBack={()=>changeView('home')}/>} {view==='compare'&&<Compare/>} {view==='method'&&<Method/>}<footer><div className="brand">RMPM</div><p>Relative Manifesto-Positioning Map<br/>相対的公約位置地図</p><div className="footer-credit">KCS 福岡情報専門学校 F2 班</div><span>{election.disclaimer}。</span></footer></main>;
+  return <main><Header setView={changeView}/>{view==='home'&&<Home onSelect={selectCandidate} setView={changeView}/>} {view==='candidate'&&<CandidateDetail candidateId={candidateId} onBack={()=>changeView('home')}/>} {view==='compare'&&<Compare/>} {view==='method'&&<Method/>}<footer><div className="brand">RMPM</div><p>Relative Manifesto-Positioning Map<br/>相対的公約位置地図</p><div className="footer-credit"><strong>KCS 福岡情報専門学校 F2 班</strong><small>制作：宮本　<a href="mailto:1524miya@gmail.com">1524miya@gmail.com</a></small></div><span>{election.disclaimer}。</span></footer></main>;
 }
