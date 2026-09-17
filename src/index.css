@@ -125,3 +125,13 @@ footer{background:#34312e}footer p{color:#d5cec7}footer>span{color:#bdb5ae}
 @media(max-width:800px){.hero{display:block;padding:54px 22px 42px}.hero-actions{flex-wrap:wrap}.hero-map-preview{margin-top:42px;padding:18px 14px 15px;box-shadow:7px 7px 0 #f4e9dd}.hero-map-preview h2{font-size:19px}.hero-map-preview>p{font-size:9px}.hero-principle{display:block;margin:0 20px 24px;padding:18px}.hero-principle>span,.hero-principle>strong{display:block}.hero-principle>strong{margin-top:8px;font-size:16px}.hero-principle>p{margin-top:9px}.hero-principle+.fiction-banner{margin:0 20px 42px}}
 
 @media(min-width:801px){.media-step-explanation{padding-left:26px}}
+
+/* Surface the RMPM before the long evidence flow on candidate pages. */
+.detail-shell{display:flex;flex-direction:column}
+.detail-shell>.profile{order:1}
+.detail-shell>.policy-tabs{order:2}
+.detail-shell>.map-section{order:3;margin-top:24px}
+.detail-shell>.detail-intro{order:4}
+.detail-shell>.local-transparency-note{order:5}
+.detail-shell>.policy-flow{order:6}
+@media(max-width:800px){.detail-shell>.map-section{margin-top:10px}}
