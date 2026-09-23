@@ -7,6 +7,19 @@ export const election = {
   disclaimer: '本デモに登場する自治体・候補者・活動記録等はすべて架空です',
 };
 
+export const rmpmImplementation = {
+  name: 'RMPM Demo',
+  operator: '未来公共メディア（架空）',
+  methodologyVersion: 'Methodology v1.0',
+  updatedAt: '2026年9月18日',
+  criteria: [
+    '公約中心性：選挙公報内の位置づけ、記載量、重点表現をもとに3段階で整理',
+    '確認記録の範囲：公開資料で確認できた活動の種類、時期、継続性をもとに3段階で整理',
+    '非公開・未確認の記録は「活動が少ない」とみなさず、座標化しない場合がある',
+  ],
+  revision: '2026年9月18日：編集上の相対的位置づけであることと、根拠表示を明確化',
+};
+
 export const activityFrameworks = {
   national: ['国会質問','委員会質問','質問主意書','法案提出・共同提出','議決','その他公開記録'],
   local: ['本会議質問','委員会活動','条例案','請願・陳情関連','行政への提言','その他公開記録'],

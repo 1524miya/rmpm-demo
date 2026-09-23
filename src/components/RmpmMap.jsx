@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import CandidatePortrait from './CandidatePortrait';
+import { rmpmImplementation } from '../data/mockData';
 
 const policyColors = ['#c56f2a','#8d7766','#6f7477','#b48a66'];
 const candidateColors = ['#c56f2a','#6f7477','#9a826d'];
@@ -24,6 +25,24 @@ function counts(policy) {
 
 function hasResponse(policy) {
   return policy.explanation !== '候補者からの回答はありません';
+}
+
+function centralityBand(policy) {
+  if (policy.centrality >= 75) return '最重点';
+  if (policy.centrality >= 45) return '重点';
+  return '言及';
+}
+
+function activityBand(policy) {
+  if (policy.activityLevel === null) return '座標化せず';
+  if (policy.activityLevel >= 67) return '相対的に多い';
+  if (policy.activityLevel >= 34) return '中程度';
+  return '相対的に少ない';
+}
+
+function positionReason(policy) {
+  if (policy.activityLevel === null) return '確認可能な資料が限られるため、公開記録の少なさを候補者の活動量へ置き換えず、散布図の外に置いています。';
+  return `公約内での位置づけを「${centralityBand(policy)}」、公開資料で確認できる記録の範囲を「${activityBand(policy)}」として整理し、同じ地図内の公約との相対関係から配置しています。`;
 }
 
 function verification(policy) {
@@ -68,7 +87,7 @@ function LabeledPoint({ cx, cy, payload, selectedKey, onSelect, mode }) {
   </g>;
 }
 
-function DetailPanel({ item, onSource, onClose }) {
+function DetailPanel({ item, onSource, onClose, onMethodology }) {
   if (!item) return <div className="map-detail-empty"><span>気になる点を選んでください</span><p>「なぜこの位置なのか？」から、公約・説明・検証・一次資料へ進めます。</p></div>;
   const { candidate, policy } = item;
   const steps = policy.previous ? [
@@ -85,10 +104,10 @@ function DetailPanel({ item, onSource, onClose }) {
     ['過去発言・報道アーカイブ', '候補者アンケートと2026年の現在公約を時系列で確認。過去公約との比較は行いません。'],
     ['メディアによる検証・取材', verification(policy)],
   ];
-  return <aside className="map-detail-panel" aria-live="polite"><header><div className="map-detail-candidate"><CandidatePortrait candidate={candidate} size="detail"/><div><span className="detail-question">なぜこの位置なのか？</span><span>{candidate.role}・架空候補者</span><h3>{candidate.name}</h3></div></div><div className="detail-actions"><span className="selected-policy">{policy.theme}</span><button onClick={onClose} aria-label="選択を解除">×</button></div></header><div className="accountability-steps">{steps.map(([label,text],i)=><section key={label}><i>{String(i+1).padStart(2,'0')}</i><div><small>{label}</small><p>{text}</p>{label.includes('関連活動') && <div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>出典を見る：{source.type}</button>)}</div>}{label==='候補者本人の説明'&&!hasResponse(policy)&&<span className="response-facts">回答依頼：{policy.responseRequested}　／　最終確認：{policy.lastConfirmed}</span>}{label==='候補者本人の説明'&&<span className="response-principle">説明の有無は点数化しません。</span>}</div></section>)}<section><i>{String(steps.length+1).padStart(2,'0')}</i><div><small>根拠資料</small><p>一次資料の該当箇所と、公約に関連付けた理由を確認できます。</p><div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>一次資料を確認 →</button>)}</div></div></section><section className="voter-step"><i>{String(steps.length+2).padStart(2,'0')}</i><div><small>有権者が判断</small><p>ここまでの情報を基に、最終的に判断するのは有権者です。</p></div></section></div></aside>;
+  return <aside className="map-detail-panel" aria-live="polite"><header><div className="map-detail-candidate"><CandidatePortrait candidate={candidate} size="detail"/><div><span className="detail-question">なぜこの位置？</span><span>{candidate.role}・架空候補者</span><h3>{candidate.name}</h3></div></div><div className="detail-actions"><span className="selected-policy">{policy.theme}</span><button onClick={onClose} aria-label="選択を解除">×</button></div></header><details className="position-evidence" open><summary>この位置の根拠を見る</summary><div className="position-evidence-grid"><dl><div><dt>対象候補者</dt><dd>{candidate.name}</dd></div><div><dt>対象公約</dt><dd>{policy.current}</dd></div><div><dt>公約中心性の判定</dt><dd>{centralityBand(policy)}</dd></div><div><dt>確認記録の範囲</dt><dd>{activityBand(policy)}</dd></div><div><dt>確認された関連活動</dt><dd>{counts(policy).length ? counts(policy).map(x=>`${x.kind} ${x.count}件`).join(' ／ ') : policy.recordStatus}</dd></div></dl><div className="position-rationale"><strong>位置づけ理由</strong><p>{positionReason(policy)}</p><small>運営：{rmpmImplementation.operator}<br/>{rmpmImplementation.methodologyVersion} ／ 最終更新：{rmpmImplementation.updatedAt}</small><button onClick={onMethodology}>この地図の作り方・分類基準・修正履歴を見る →</button></div></div><div className="position-sources"><span>使用した一次資料</span>{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>{source.type}：{source.title} →</button>)}</div></details><div className="accountability-steps">{steps.map(([label,text],i)=><section key={label}><i>{String(i+1).padStart(2,'0')}</i><div><small>{label}</small><p>{text}</p>{label.includes('関連活動') && <div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>出典を見る：{source.type}</button>)}</div>}{label==='候補者本人の説明'&&!hasResponse(policy)&&<span className="response-facts">回答依頼：{policy.responseRequested}　／　最終確認：{policy.lastConfirmed}</span>}{label==='候補者本人の説明'&&<span className="response-principle">説明の有無は点数化しません。</span>}</div></section>)}<section><i>{String(steps.length+1).padStart(2,'0')}</i><div><small>根拠資料</small><p>一次資料の該当箇所と、公約に関連付けた理由を確認できます。</p><div className="inline-sources">{policy.sources.map(source=><button key={source.title} onClick={()=>onSource(source,policy)}>一次資料を確認 →</button>)}</div></div></section><section className="voter-step"><i>{String(steps.length+2).padStart(2,'0')}</i><div><small>有権者が判断</small><p>ここまでの情報を基に、最終的に判断するのは有権者です。</p></div></section></div></aside>;
 }
 
-export default function RmpmMap({ candidate, candidates, initialTheme, onSource }) {
+export default function RmpmMap({ candidate, candidates, initialTheme, onSource, onMethodology }) {
   const [mode,setMode] = useState('candidate');
   const [theme,setTheme] = useState(initialTheme || '子育て');
   const [selected,setSelected] = useState(null);
@@ -102,9 +121,10 @@ export default function RmpmMap({ candidate, candidates, initialTheme, onSource 
     ? candidate.policies.filter(policy=>policy.activityLevel === null && policy.previous).map(policy=>({candidate,policy,color:'#7b8791'}))
     : candidates.map(person=>({candidate:person,policy:person.policies.find(p=>p.theme===theme),color:'#7b8791'})).filter(item=>item.policy?.activityLevel === null && item.policy.previous);
   return <div className="rmpm-explorer">
+    <div className="rmpm-identity"><div><strong>{rmpmImplementation.name}</strong><span>運営：{rmpmImplementation.operator}</span></div><div><b>{rmpmImplementation.methodologyVersion}</b><span>最終更新：{rmpmImplementation.updatedAt}</span></div><button onClick={onMethodology}>方法論・透明性 →</button></div>
     <div className="map-controls"><div className="mode-switch" aria-label="RMPMの見方を選ぶ"><button className={mode==='candidate'?'active':''} onClick={()=>setMode('candidate')}>候補者ごとに見る</button><button className={mode==='promise'?'active':''} onClick={()=>setMode('promise')}>公約テーマで比べる</button></div>{mode==='promise'&&<div className="map-theme-switch" aria-label="比べる公約テーマを選ぶ">{themes.map(t=><button className={theme===t?'active':''} onClick={()=>setTheme(t)} key={t}>{t}</button>)}</div>}</div>
     <div className="promise-mode-intro">{mode==='candidate'?<><strong>{candidate.name}候補の複数の公約を表示しています。</strong><span>1人の候補者について、複数の公約の位置を見るモードです。</span></>:<><strong>「{theme}」を掲げる複数の候補者を表示しています。</strong><span>1つの公約テーマについて、候補者同士の違いを見るモードです。</span></>}</div>
-    <div className="map-alert compact-alert"><strong>この位置は候補者の優劣・誠実さ・政策の正しさを示すものではありません。</strong><span>右上ほど優秀という意味はなく、総合得点・達成率・順位を表しません。</span></div>
+    <div className="map-alert compact-alert editorial-position-note"><strong>この位置は政治家の評価点ではありません。</strong><span>公開資料と公開された分類基準に基づく、運営主体による編集上の相対的位置づけです。位置の違いを「なぜ？」という問いの入口として利用します。</span></div>
     <p className="mobile-chart-hint">横にスクロールして、軸と点の位置関係を確認できます →</p>
     <div className="chart-wrap interactive-chart" aria-label={mode==='candidate'?`${candidate.name}候補の複数の公約を見るRMPM`:`${theme}について複数の候補者を比べるRMPM`} onClick={event=>{if(!event.target.closest('.rmpm-point,.map-labels button'))setSelected(null)}}>
       <ResponsiveContainer width="100%" height={420}><ScatterChart margin={{top:48,right:92,bottom:64,left:68}}><CartesianGrid stroke="#e6e0da" strokeDasharray="3 5"/><XAxis type="number" dataKey="x" domain={[0,100]} ticks={[10,50,90]} tickFormatter={v=>v<34?'限定的':v<67?'複数':'継続的'} label={{value:'公開資料で確認できる記録の範囲 →',position:'bottom',offset:14,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}}/><YAxis type="number" dataKey="y" domain={[0,100]} ticks={[10,50,90]} tickFormatter={v=>v<34?'関連':v<67?'重点':'中心'} label={{value:'公約全体における政策の中心性 →',angle:-90,position:'insideLeft',offset:9,fill:'#625b55',fontSize:11}} tick={{fontSize:10,fill:'#77716b'}}/><Tooltip content={<MapTooltip mode={mode}/>} cursor={{stroke:'#c8b6a7',strokeDasharray:'3 4'}}/><Scatter data={data} shape={props=><LabeledPoint {...props} mode={mode} selectedKey={pointKey(selected)} onSelect={setSelected}/>} isAnimationActive={false}/></ScatterChart></ResponsiveContainer>
@@ -112,6 +132,6 @@ export default function RmpmMap({ candidate, candidates, initialTheme, onSource 
     </div>
     {unavailable.map(item=><button className="newcomer-map-item unavailable-map-item" key={`${item.candidate.id}-${item.policy.theme}`} onClick={()=>setSelected(item)}><strong>{mode==='candidate'?item.policy.theme:item.candidate.name}・{item.policy.recordStatus}</strong><span>{item.policy.recordNote} 記録未公開を低い活動値に変換せず、散布図外に表示しています。詳細を見る →</span></button>)}
     <p className="map-entry-note">点は結論ではなく、問いの入口です。</p>
-    <DetailPanel item={selected} onSource={onSource} onClose={()=>setSelected(null)}/>
+    <DetailPanel item={selected} onSource={onSource} onClose={()=>setSelected(null)} onMethodology={onMethodology}/>
   </div>;
 }
