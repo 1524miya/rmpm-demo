@@ -74,11 +74,11 @@ function mediaCheck(policy) {
   return `${policy.sources.map(s => s.type).slice(0, 2).join('・')}と過去発言を照合し、変化の理由を確認する問いを整理しています。正誤判定ではありません。`;
 }
 
-function Header({ setView }) {
+function Header({ setView, onBack, canGoBack }) {
   return <header className="site-header">
     <button className="brand brand-button" onClick={() => setView('home')}>RMPM <span>{election.title}</span></button>
-    <nav aria-label="主要ナビゲーション"><button className="home-nav-button" onClick={() => setView('home')}>← ホームに戻る</button><button onClick={() => setView('home')}>候補者</button><button onClick={() => setView('compare')}>政策比較</button><button onClick={() => setView('method')}>方法論・透明性</button></nav>
-    <button className="menu-button" onClick={() => setView('method')} aria-label="方法論を開く">考え方</button>
+    <nav aria-label="主要ナビゲーション">{canGoBack&&<button className="back-nav-button" onClick={onBack}>← 前の画面に戻る</button>}<button className="home-nav-button" onClick={() => setView('home')}>ホーム</button><button onClick={() => setView('home')}>候補者</button><button onClick={() => setView('compare')}>政策比較</button><button onClick={() => setView('method')}>方法論・透明性</button></nav>
+    <button className="menu-button" onClick={canGoBack ? onBack : () => setView('method')} aria-label={canGoBack?'前の画面に戻る':'方法論を開く'}>{canGoBack?'← 戻る':'考え方'}</button>
   </header>;
 }
 
@@ -202,7 +202,9 @@ function PrototypeTest() {
 
 export default function App() {
   const [view,setView] = useState('home'); const [candidateId,setCandidateId] = useState('tanaka');
-  const changeView=v=>{setView(v);window.scrollTo(0,0)};
+  const [viewHistory,setViewHistory] = useState([]);
+  const changeView=v=>{if(v!==view)setViewHistory(history=>[...history,{view,candidateId}]);setView(v);window.scrollTo(0,0)};
+  const goBack=()=>setViewHistory(history=>{if(!history.length)return history;const previous=history[history.length-1];setView(previous.view);setCandidateId(previous.candidateId);window.scrollTo(0,0);return history.slice(0,-1)});
   const selectCandidate=id=>{setCandidateId(id);changeView('candidate')};
-  return <main><Header setView={changeView}/>{view==='home'&&<Home onSelect={selectCandidate} setView={changeView}/>} {view==='candidate'&&<CandidateDetail candidateId={candidateId} onBack={()=>changeView('home')} onMethodology={()=>changeView('method')}/>} {view==='compare'&&<Compare/>} {view==='method'&&<Method/>}<footer><div className="brand">RMPM</div><p>Relative Manifesto-Positioning Map<br/>相対的公約位置地図</p><div className="footer-credit"><strong>KCS 福岡情報専門学校 F2 班</strong><small>制作：宮本　<a href="mailto:1524miya@gmail.com">1524miya@gmail.com</a></small></div><span>{election.disclaimer}。</span></footer></main>;
+  return <main><Header setView={changeView} onBack={goBack} canGoBack={viewHistory.length>0}/>{view==='home'&&<Home onSelect={selectCandidate} setView={changeView}/>} {view==='candidate'&&<CandidateDetail candidateId={candidateId} onBack={goBack} onMethodology={()=>changeView('method')}/>} {view==='compare'&&<Compare/>} {view==='method'&&<Method/>}<footer><div className="brand">RMPM</div><p>Relative Manifesto-Positioning Map<br/>相対的公約位置地図</p><div className="footer-credit"><strong>KCS 福岡情報専門学校 F2 班</strong><small>制作：宮本　<a href="mailto:1524miya@gmail.com">1524miya@gmail.com</a></small></div><span>{election.disclaimer}。</span></footer></main>;
 }
