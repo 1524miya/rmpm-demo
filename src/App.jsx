@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { candidates, themes, methodology, election, regions, activityFrameworks } from './data/mockData';
 import RmpmMap from './components/RmpmMap';
 import RoleIcon from './components/RoleIcon';
@@ -206,5 +207,5 @@ export default function App() {
   const changeView=v=>{if(v!==view)setViewHistory(history=>[...history,{view,candidateId}]);setView(v);window.scrollTo(0,0)};
   const goBack=()=>setViewHistory(history=>{if(!history.length)return history;const previous=history[history.length-1];setView(previous.view);setCandidateId(previous.candidateId);window.scrollTo(0,0);return history.slice(0,-1)});
   const selectCandidate=id=>{setCandidateId(id);changeView('candidate')};
-  return <main><Header setView={changeView} onBack={goBack} canGoBack={viewHistory.length>0}/>{view==='home'&&<Home onSelect={selectCandidate} setView={changeView}/>} {view==='candidate'&&<CandidateDetail candidateId={candidateId} onBack={goBack} onMethodology={()=>changeView('method')}/>} {view==='compare'&&<Compare/>} {view==='method'&&<Method/>}<footer><div className="brand">RMPM</div><p>Relative Manifesto-Positioning Map<br/>相対的公約位置地図</p><div className="footer-credit"><strong>KCS 福岡情報専門学校 F2 班</strong><small>制作：宮本　<a href="mailto:1524miya@gmail.com">1524miya@gmail.com</a></small></div><span>{election.disclaimer}。</span></footer></main>;
+  return <main><Header setView={changeView} onBack={goBack} canGoBack={viewHistory.length>0}/>{view==='home'&&<Home onSelect={selectCandidate} setView={changeView}/>} {view==='candidate'&&<CandidateDetail candidateId={candidateId} onBack={goBack} onMethodology={()=>changeView('method')}/>} {view==='compare'&&<Compare/>} {view==='method'&&<Method/>}<footer><div className="brand">RMPM</div><p>Relative Manifesto-Positioning Map<br/>相対的公約位置地図</p><div className="footer-credit"><strong>KCS 福岡情報専門学校 F2 班</strong><small>制作：宮本　<a href="mailto:1524miya@gmail.com">1524miya@gmail.com</a></small></div><span>{election.disclaimer}。</span></footer><Analytics /></main>;
 }
